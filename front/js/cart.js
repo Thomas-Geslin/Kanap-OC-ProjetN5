@@ -125,15 +125,26 @@ let array = [];
 for (let del of deleteButton) {
     array.push(del);
     del.addEventListener('click', function() {
-        getProduct = del.closest('article');
-        // Lignes permettant de récupérer l'index du produit et de le supprimer du localStorage
-        let index = array.indexOf(del);
-        productArray.splice(index, 1);
-        localStorage.setItem('productsArray', JSON.stringify(productArray));
-        // Ligne supprimant le produit du DOM
-        getProduct.remove();
-        totalQty();
-        totalPrc();
+        // Si il n'y a plus de produit quand on supprime, le localStorage revient à zéro
+        if (productArray.length === 1) {
+            getProduct = del.closest('article');
+            productArray.pop();
+            localStorage.clear();
+            getProduct.remove();
+            totalQty();
+            totalPrc();
+        // Sinon on se contente de retirer le produit concerné
+        } else {
+            getProduct = del.closest('article');
+            // Lignes permettant de récupérer l'index du produit et de le supprimer du localStorage
+            let index = array.indexOf(del);
+            productArray.splice(index, 1);
+            localStorage.setItem('productsArray', JSON.stringify(productArray));
+            // Ligne supprimant le produit du DOM
+            getProduct.remove();
+            totalQty();
+            totalPrc();
+        }
     })
 }
 
@@ -145,28 +156,179 @@ let arrayQty = [];
 for (let qty of quantityInput) {
     arrayQty.push(qty);
     qty.addEventListener('change', function() {
-        let index = arrayQty.indexOf(qty);
-        let quantity = qty.value;
-        // Récupère le produit dont on modifie la quantité dans l'array
-        let product = productArray.at(index);
-        // Transforme notre objet (produit) en array
-        let getInfo = (Object.values(product));
-        // Change la quantité de ce produit
-        getInfo.splice(2, 1, quantity);
-        // Rechange le statut de (produit) de array à objet
-        let getObject = {
-            'productId': getInfo.at(0),
-            'productColor': getInfo.at(1),
-            'productQuantity': getInfo.at(2),
-            'productPrice': getInfo.at(3),
-            'productName': getInfo.at(4),
-            'productImage': getInfo.at(5),
-            'productAltTXt': getInfo.at(6)
-        };
-        // Insère la nouvelle quantité dans le localStorage
-        productArray.splice(index, 1, getObject);
-        localStorage.setItem('productsArray', JSON.stringify(productArray));
-        totalQty();
-        totalPrc();
+        if (productArray.length > 1) {
+            let index = arrayQty.indexOf(qty);
+            let quantity = qty.value;
+            // Récupère le produit dont on modifie la quantité dans l'array
+            let product = productArray.at(index);
+            // Transforme notre objet (produit) en array
+            let getInfo = (Object.values(product));
+            // Change la quantité de ce produit
+            getInfo.splice(2, 1, quantity);
+            // Rechange le statut de (produit) de array à objet
+            let getObject = {
+                'productId': getInfo.at(0),
+                'productColor': getInfo.at(1),
+                'productQuantity': getInfo.at(2),
+                'productPrice': getInfo.at(3),
+                'productName': getInfo.at(4),
+                'productImage': getInfo.at(5),
+                'productAltTXt': getInfo.at(6)
+            };
+            // Insère la nouvelle quantité dans le localStorage
+            productArray.splice(index, 1, getObject);
+            localStorage.setItem('productsArray', JSON.stringify(productArray));
+            totalQty();
+            totalPrc();
+        } else {
+            let quantity = qty.value;
+            let product = productArray.at([0]);
+            let getInfo = (Object.values(product));
+            console.log(getInfo);
+            getInfo.splice(2, 1, quantity);
+            let getObject = {
+                'productId': getInfo.at(0),
+                'productColor': getInfo.at(1),
+                'productQuantity': getInfo.at(2),
+                'productPrice': getInfo.at(3),
+                'productName': getInfo.at(4),
+                'productImage': getInfo.at(5),
+                'productAltTXt': getInfo.at(6)
+            }
+            productArray.splice(0, 1, getObject);
+            localStorage.setItem('productsArray', JSON.stringify(productArray));
+            totalQty();
+            totalPrc();
+        }
     })
 }
+
+/* Fonctions vérifiant les données entrées par les clients */
+let firstName = document.getElementById('firstName');
+let lastName = document.getElementById('lastName');
+let address = document.getElementById('address');
+let city = document.getElementById('city');
+let email = document.getElementById('email');
+let orderButton = document.getElementById('order');
+
+let contact = {
+    firstName,
+    lastName,
+    address,
+    city,
+    email
+}
+
+let nameRegex = /^\s+|[^a-zA-ZÀ-ž\s-']/;
+
+firstName.addEventListener('change', function(a) {
+    let value = a.target.value;
+    if (nameRegex.test(value)) {
+        document
+        .getElementById('firstNameErrorMsg')
+        .innerHTML = 'Veuillez rentrer uniquement des lettres !';
+    } else {
+        document
+        .getElementById('firstNameErrorMsg')
+        .innerHTML = '';
+        contact.firstName = value;
+    }
+})
+
+lastName.addEventListener('change', function (e) {
+    let value = e.target.value;
+    if (nameRegex.test(value)) {
+        document
+        .getElementById('lastNameErrorMsg')
+        .innerHTML = 'Veuillez rentrer uniquement des lettres !';
+    } else {;
+        document
+        .getElementById('lastNameErrorMsg')
+        .innerHTML = '';
+        contact.lastName = value;
+    }
+})
+
+address.addEventListener('change', function(e) {
+    let value = e.target.value;
+    if (/^\s+|[^a-zA-ZÀ-ž0-9\s-',]/.test(value)) {
+        document
+        .getElementById('addressErrorMsg')
+        .innerHTML = 'Veuillez rentrer une adresse valide !';
+    } else {
+        document
+        .getElementById('addressErrorMsg')
+        .innerHTML = '';
+        contact.address = value;
+    }
+})
+
+city.addEventListener('change', function(e) {
+    let value = e.target.value;
+    if (/^\s+|[^a-zA-ZÀ-ž\s-',]/.test(value)) {
+        document
+        .getElementById('cityErrorMsg')
+        .innerHTML = 'Veuillez rentrer une ville existante !';
+        city.innerHTML = "";
+        } else {
+        document
+        .getElementById('cityErrorMsg')
+        .innerHTML = '';
+        contact.city = value;
+    }
+})
+
+email.addEventListener('change', function(e) {
+    let value = e.target.value;
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)) {
+        document
+        .getElementById('emailErrorMsg')
+        .innerHTML = '';
+        contact.email = value;
+        orderButton.removeAttribute('disabled');
+    } else {
+        document
+        .getElementById('emailErrorMsg')
+        .innerHTML = 'Veuillez rentrer une adresse mail valide !';
+        orderButton.setAttribute('disabled', true);
+    }
+})
+ 
+// Ligne permettant de bloquer le bouton pour envoyer le formulaire au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    orderButton.setAttribute('disabled', true);
+})
+
+
+/* Fonction enoyant les données recceuillis à l'API */
+function sendData(e) {
+    e.preventDefault();
+
+    let products = [];
+    for (let id of productArray) {
+        products.push(id.productId);
+    }
+
+    fetch('http://localhost:3000/api/products/order', {
+            method: "POST",
+            headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+        },
+            body: JSON.stringify({contact, products})
+    })
+    .then(function(res) {
+        if(res.ok) {
+            return res.json();
+        } else {
+            console.log('problème réponse');
+        }
+    })
+    .then(function(text) {
+        window.location.assign("./confirmation.html?orderId=" + text.orderId);
+    })
+    .catch(function(err) {
+        console.log(err);
+    })
+}
+orderButton.addEventListener('click', sendData);

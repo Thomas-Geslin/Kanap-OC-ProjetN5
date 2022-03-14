@@ -1,0 +1,15 @@
+{
+    // Utilisez IntelliSense pour en savoir plus sur les attributs possibles.
+    // Pointez pour afficher la description des attributs existants.
+    // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "file:///C:/Users/User1/Desktop/Boulot%20Thomas/Projet%20N%C2%B05/P5-Dev-Web-Kanap/front/html/product.html?id=034707184e8e4eefb46400b5a3774b5f",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}
