@@ -69,14 +69,7 @@ function cardArray (id, name, quantity, color, price, img, alt) {
 
 /* Fonction intégrant les produits au DOM*/
 for (let product of productArray) {
-    let productId = product.productId;
-    let productName = product.productName;
-    let productQuantity = product.productQuantity;
-    let productColor = product.productColor;
-    let productPrice = product.productPrice;
-    let productImg = product.productImage;
-    let productAlt = product.productAltTxt;
-    cardArray(productId, productName, productQuantity, productColor, productPrice, productImg, productAlt);
+    cardArray(product.productId, product.productName, product.productQuantity, product.productColor, product.productPrice, product.productImage, product.productAltTxt);
 }
 
 
@@ -86,13 +79,13 @@ let totalPrice = document.getElementById('totalPrice');
 function totalPrc () {
     let priceSum = 0;
     if (productArray.length === 0) {
-        totalPrice.innerHTML = '0';
+        totalPrice.innerText = '0';
     } else {
         for (let price of productArray) {
             let productsPrice = price.productPrice;
             let prix = parseInt(productsPrice, 10);
             priceSum += (prix * price.productQuantity);
-            totalPrice.innerHTML = priceSum;
+            totalPrice.innerText = priceSum;
         }
     }
 }
@@ -111,7 +104,7 @@ function totalQty () {
             let productsQuantity = quantity.productQuantity;
             let quantityTotal = parseInt(productsQuantity, 10);
             quantitySum += quantityTotal;
-            totalQuantity.innerHTML = quantitySum;
+            totalQuantity.innerText = quantitySum;
         }
     }
 }
@@ -138,7 +131,9 @@ for (let del of deleteButton) {
             getProduct = del.closest('article');
             // Lignes permettant de récupérer l'index du produit et de le supprimer du localStorage
             let index = array.indexOf(del);
+            array.splice(index, 1);
             productArray.splice(index, 1);
+            arrayQty.splice(index, 1)
             localStorage.setItem('productsArray', JSON.stringify(productArray));
             // Ligne supprimant le produit du DOM
             getProduct.remove();
@@ -156,52 +151,32 @@ let arrayQty = [];
 for (let qty of quantityInput) {
     arrayQty.push(qty);
     qty.addEventListener('change', function() {
-        if (productArray.length > 1) {
-            let index = arrayQty.indexOf(qty);
-            let quantity = qty.value;
-            // Récupère le produit dont on modifie la quantité dans l'array
-            let product = productArray.at(index);
-            // Transforme notre objet (produit) en array
-            let getInfo = (Object.values(product));
-            // Change la quantité de ce produit
-            getInfo.splice(2, 1, quantity);
-            // Rechange le statut de (produit) de array à objet
-            let getObject = {
-                'productId': getInfo.at(0),
-                'productColor': getInfo.at(1),
-                'productQuantity': getInfo.at(2),
-                'productPrice': getInfo.at(3),
-                'productName': getInfo.at(4),
-                'productImage': getInfo.at(5),
-                'productAltTXt': getInfo.at(6)
-            };
-            // Insère la nouvelle quantité dans le localStorage
-            productArray.splice(index, 1, getObject);
-            localStorage.setItem('productsArray', JSON.stringify(productArray));
-            totalQty();
-            totalPrc();
-        } else {
-            let quantity = qty.value;
-            let product = productArray.at([0]);
-            let getInfo = (Object.values(product));
-            console.log(getInfo);
-            getInfo.splice(2, 1, quantity);
-            let getObject = {
-                'productId': getInfo.at(0),
-                'productColor': getInfo.at(1),
-                'productQuantity': getInfo.at(2),
-                'productPrice': getInfo.at(3),
-                'productName': getInfo.at(4),
-                'productImage': getInfo.at(5),
-                'productAltTXt': getInfo.at(6)
-            }
-            productArray.splice(0, 1, getObject);
-            localStorage.setItem('productsArray', JSON.stringify(productArray));
-            totalQty();
-            totalPrc();
-        }
-    })
+        let index = arrayQty.indexOf(qty);
+        let quantity = qty.value;
+        // Récupère le produit dont on modifie la quantité dans l'array
+        let product = productArray.at(index);
+        // Transforme notre objet (produit) en array
+        let getInfo = (Object.values(product));
+        // Change la quantité de ce produit
+        getInfo.splice(2, 1, quantity);
+        // Rechange le statut de (produit) de array à objet
+        let getObject = {
+            'productId': getInfo.at(0),
+            'productColor': getInfo.at(1),
+            'productQuantity': getInfo.at(2),
+            'productPrice': getInfo.at(3),
+            'productName': getInfo.at(4),
+            'productImage': getInfo.at(5),
+            'productAltTXt': getInfo.at(6)
+        };
+        // Insère la nouvelle quantité dans le localStorage
+        productArray.splice(index, 1, getObject);
+        localStorage.setItem('productsArray', JSON.stringify(productArray));
+        totalQty();
+        totalPrc();
+    });
 }
+
 
 /* Fonctions vérifiant les données entrées par les clients */
 let firstName = document.getElementById('firstName');
@@ -211,14 +186,6 @@ let city = document.getElementById('city');
 let email = document.getElementById('email');
 let orderButton = document.getElementById('order');
 
-let contact = {
-    firstName,
-    lastName,
-    address,
-    city,
-    email
-}
-
 let nameRegex = /^\s+|[^a-zA-ZÀ-ž\s-']/;
 
 firstName.addEventListener('change', function(a) {
@@ -226,11 +193,11 @@ firstName.addEventListener('change', function(a) {
     if (nameRegex.test(value)) {
         document
         .getElementById('firstNameErrorMsg')
-        .innerHTML = 'Veuillez rentrer uniquement des lettres !';
+        .innerText = 'Veuillez rentrer uniquement des lettres !';
     } else {
         document
         .getElementById('firstNameErrorMsg')
-        .innerHTML = '';
+        .innerText = '';
         contact.firstName = value;
     }
 })
@@ -240,11 +207,11 @@ lastName.addEventListener('change', function (e) {
     if (nameRegex.test(value)) {
         document
         .getElementById('lastNameErrorMsg')
-        .innerHTML = 'Veuillez rentrer uniquement des lettres !';
+        .innerText = 'Veuillez rentrer uniquement des lettres !';
     } else {;
         document
         .getElementById('lastNameErrorMsg')
-        .innerHTML = '';
+        .innerText = '';
         contact.lastName = value;
     }
 })
@@ -254,11 +221,11 @@ address.addEventListener('change', function(e) {
     if (/^\s+|[^a-zA-ZÀ-ž0-9\s-',]/.test(value)) {
         document
         .getElementById('addressErrorMsg')
-        .innerHTML = 'Veuillez rentrer une adresse valide !';
+        .innerText = 'Veuillez rentrer une adresse valide !';
     } else {
         document
         .getElementById('addressErrorMsg')
-        .innerHTML = '';
+        .innerText = '';
         contact.address = value;
     }
 })
@@ -268,12 +235,12 @@ city.addEventListener('change', function(e) {
     if (/^\s+|[^a-zA-ZÀ-ž\s-',]/.test(value)) {
         document
         .getElementById('cityErrorMsg')
-        .innerHTML = 'Veuillez rentrer une ville existante !';
-        city.innerHTML = "";
+        .innerText = 'Veuillez rentrer une ville existante !';
+        city.innerText = "";
         } else {
         document
         .getElementById('cityErrorMsg')
-        .innerHTML = '';
+        .innerText = '';
         contact.city = value;
     }
 })
@@ -283,17 +250,26 @@ email.addEventListener('change', function(e) {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)) {
         document
         .getElementById('emailErrorMsg')
-        .innerHTML = '';
+        .innerText = '';
         contact.email = value;
         orderButton.removeAttribute('disabled');
     } else {
         document
         .getElementById('emailErrorMsg')
-        .innerHTML = 'Veuillez rentrer une adresse mail valide !';
+        .innerText = 'Veuillez rentrer une adresse mail valide !';
         orderButton.setAttribute('disabled', true);
     }
 })
- 
+
+// Création de l'objet contact pour l'API
+let contact = {
+    firstName,
+    lastName,
+    address,
+    city,
+    email
+}
+
 // Ligne permettant de bloquer le bouton pour envoyer le formulaire au chargement de la page
 document.addEventListener('DOMContentLoaded', function() {
     orderButton.setAttribute('disabled', true);
@@ -331,4 +307,6 @@ function sendData(e) {
         console.log(err);
     })
 }
+
+// Ligne requêtant l'API au click sur 'Commander !'
 orderButton.addEventListener('click', sendData);

@@ -1,8 +1,0 @@
-impossible d'avoir un effet sur dernier produit du panier si on supprime dernier (Cart)
-
-produit se rajoute au panier quand on passe d'une couleur à l'autre mm si couleur est déjà dans le panier (Product ou Cart)
-
-alertes quand on modifie quantité (product)
-
-
-
